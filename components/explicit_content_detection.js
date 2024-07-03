@@ -55,11 +55,11 @@ Vue.component('explicit-content-detection-viz', {
             Create a clean list of explicit content detetcion segments
             `
             const segments = {
-                'VERY_LIKELY': { 'segments': [], 'count': 0 },
-                'LIKELY': { 'segments': [], 'count': 0 },
-                'POSSIBLE': { 'segments': [], 'count': 0 },
-                'UNLIKELY': { 'segments': [], 'count': 0 },
-                'VERY_UNLIKELY': { 'segments': [], 'count': 0 },
+                'VERY_LIKELY': {'segments': [], 'count': 0},
+                'LIKELY': {'segments': [], 'count': 0},
+                'POSSIBLE': {'segments': [], 'count': 0},
+                'UNLIKELY': {'segments': [], 'count': 0},
+                'VERY_UNLIKELY': {'segments': [], 'count': 0},
             }
 
             this.indexed_explicit_frames_annotations.forEach(shot => {
@@ -70,12 +70,12 @@ Vue.component('explicit-content-detection-viz', {
 
             return segments
         },
-        current_likelihood :function (){
+        current_likelihood: function () {
 
             for (let index = 0; index < this.indexed_explicit_frames_annotations.length; index++) {
                 const element = this.indexed_explicit_frames_annotations[index]
                 if (element.time_offset > this.current_time)
-                    return this.indexed_explicit_frames_annotations[ Math.max(index - 1, 0 )].explicit_liklyhood
+                    return this.indexed_explicit_frames_annotations[Math.max(index - 1, 0)].explicit_liklyhood
             }
 
             return ''
@@ -89,30 +89,29 @@ Vue.component('explicit-content-detection-viz', {
             }
         },
         shot_clicked: function (shot_data) {
-            this.$emit('shot-clicked', { seconds: shot_data })
+            this.$emit('shot-clicked', {seconds: shot_data})
         }
     },
     template: `
     <div calss="shot_detection-container">
-
-    <div class="data-warning" v-if="explicit_frames_annotations.length == 0">JSON에 정의된 컨텐츠 데이터가 없습니다.</div>
-
-    <div>위험성(폭력성) 분석 시 기준 Likely의 기준이 엄격합니다. 아래의 설명을 봐주세요.</div>
-    <br>
-    <div class="risk-level-title" style="text-align: left; margin: 0 auto; max-width: 600px;">
-            <div style="text-align: left;">
-                <span style="display: block;">VERY_LIKELY: 매우 높은 위험성</span><br>
-                <span style="display: block;">LIKELY: 높은 위험성</span><br>
-                <span style="display: block;">POSSIBLE: 보통</span><br>
-                <span style="display: block;">UNLIKELY: 보통 낮음</span><br>
-                <span style="display: block;">VERY_UNLIKELY: 아예 낮음 & 아닐 가능성이 높다</span><br>
-            </div>
-        </div>
+        <div class="data-warning" v-if="explicit_frames_annotations.length == 0">JSON에 정의된 컨텐츠 데이터가 없습니다.</div>
     <br>
     
-    <div>현재 폭력적인 컨텐츠 가능성 : <span class="current-likelihood">{{current_likelihood}}</span> </div>
+        <div>현재 폭력적인 컨텐츠 가능성 : <span class="current-likelihood">{{current_likelihood}}</span> </div>
     <br>
-
+        <span>
+            위험성(폭력성) 분석 기준은 아래를 참고하세요.
+        </span>
+        <div style="text-align: center;">
+            <pre style="text-align: left; display: inline-block;">
+                VERY_LIKELY: 매우 높은 위험성
+                LIKELY: 높은 위험성
+                POSSIBLE: 보통
+                UNLIKELY: 보통 낮음
+                VERY_UNLIKELY: 아예 낮음 & 아닐 가능성이 높다
+            </pre>
+        </div>
+    <br>
     <div class="segment-container" v-for="segments, key in likelihood_segments" v-bind:key="key + 'z'">
                 <div class="label">{{key}}</div>
                 <div class="segment-timeline">

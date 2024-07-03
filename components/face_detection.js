@@ -32,7 +32,6 @@ style.innerHTML = `
 document.getElementsByTagName('head')[0].appendChild(style);
 
 
-
 Vue.component('bar-chart', {
     props: ['label', 'percent'],
     computed: {
@@ -53,7 +52,6 @@ Vue.component('bar-chart', {
             </div>
             `
 })
-
 
 
 // define component
@@ -106,7 +104,7 @@ Vue.component('face-detection-viz', {
             ` 
             create the list of cronological time segments that represent just when objects are present on screen
             `
-            const segments = { 'face': { 'segments': [], 'count': 0 } }
+            const segments = {'face': {'segments': [], 'count': 0}}
 
             this.indexed_face_tracks.forEach(object_tracks => {
 
@@ -139,16 +137,26 @@ Vue.component('face-detection-viz', {
             }
         },
         segment_clicked: function (seconds) {
-            this.$emit('segment-clicked', { seconds: seconds })
+            this.$emit('segment-clicked', {seconds: seconds})
         }
     },
     template: `
     <div calss="object-tracking-container">
 
-        <div class="confidence">
+        <!--<div class="confidence">
             <span>Confidence threshold</span>
             <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
             <span class="confidence-value">{{confidence_threshold}}</span>
+        </div>-->
+        <div class="confidence">
+            <span>신뢰도 임계값</span>
+            
+            <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
+            <span class="confidence-value">{{confidence_threshold}}</span>
+            <br>
+            <pre style="font-size: medium">
+            반환할 예측을 결정하는 신뢰도 점수입니다. 모델이 이 값 이상인 예측을 반환합니다. 신뢰도 기준점이 높을수록 정밀도는 높아지지만 재현율이 낮아집니다.
+            </pre>
         </div>
 
         <div class="data-warning" v-if="face_tracks.length == 0"> No face detection data in JSON</div>
@@ -207,8 +215,6 @@ Vue.component('face-detection-viz', {
 // define component
 
 
-
-
 class Face_Frame {
     constructor(json_data, video_height, video_width) {
 
@@ -233,7 +239,6 @@ class Face_Frame {
         //     })
     }
 }
-
 
 
 class Face_Track {
