@@ -24,7 +24,7 @@ style.innerHTML = `
 }
 
 .bar-chart > div{
-    background-color: #4285F4;
+    background-color: #fc9b03;
     height:1em;
 }
 
@@ -40,7 +40,7 @@ Vue.component('bar-chart', {
         },
         bar_style: function () {
             return {
-                color: '#4285F4',
+                color: '#fc9b03',
                 width: this.percent.toString() + '%'
             }
         },
@@ -151,7 +151,7 @@ Vue.component('face-detection-viz', {
         <div class="confidence">
             <span>신뢰도 임계값</span>
             
-            <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
+            <input type="range" style="accent-color: #fc9b03;" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
             <span class="confidence-value">{{confidence_threshold}}</span>
             <br>
             <pre style="font-size: medium">

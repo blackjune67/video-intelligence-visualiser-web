@@ -20,7 +20,7 @@ style.innerHTML = `
 
 .segment{
     position: absolute; 
-    background-color: #4285F4;
+    background-color: #fc9b03;
     height: 1em;
     border-radius: 5px;
     min-width: 5px;
@@ -29,7 +29,7 @@ style.innerHTML = `
 
 .label{
     display: inline-block;
-    background-color:  #4285F4;
+    background-color:  #fc9b03;
     color: white;
     padding: 5px;
     font-size: 1.1em;
@@ -181,7 +181,7 @@ Vue.component('object-tracking-viz', {
         <div class="confidence">
             <span>신뢰도 임계값</span>
             
-            <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
+            <input type="range" style="accent-color: #fc9b03;" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
             <span class="confidence-value">{{confidence_threshold}}</span>
             <br>
             <pre style="font-size: medium">

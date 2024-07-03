@@ -5,7 +5,7 @@ style.innerHTML = `
 .scene{
     display: inline-block;
     margin: 5px;
-    background-color: #4285F4;
+    background-color: #fc9b03;
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
@@ -13,7 +13,7 @@ style.innerHTML = `
 
     color:  black;
     background-color: white;
-    border: solid 2px #4285F4;
+    border: solid 2px #fc9b03;
 }
 
 .scene.current{
@@ -21,7 +21,7 @@ style.innerHTML = `
     
     background-color: #0F9D58;
 
-    background-color: #4285F4;
+    background-color: #fc9b03;
 }
 
 `;
@@ -68,7 +68,7 @@ Vue.component('shot-detection-viz', {
                         detected_shot.current_shot = true
 
                     indexed_shots.push(detected_shot)
-                    
+
                     // if (detected_label.segments.length > 0)
                     //     indexed_segments.push(detected_label)
                 })
@@ -85,7 +85,7 @@ Vue.component('shot-detection-viz', {
         //     }
         // },
         shot_clicked: function (shot_data) {
-            this.$emit('shot-clicked', { seconds: shot_data.start_time })
+            this.$emit('shot-clicked', {seconds: shot_data.start_time})
         },
         // label_on_screen: function (label) {
         //     return label.has_segment_for_time(this.current_time)
