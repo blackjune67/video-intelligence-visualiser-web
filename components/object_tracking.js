@@ -63,47 +63,10 @@ style.innerHTML = `
 }
 
 
-/*.confidence {
+.confidence {
     text-align: center;
     margin: 20px;
     font-size: 1.2em;
-}*/
-
-.confidence-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.confidence {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 20%;
-  min-width: 300px;  /!* 최소 너비 설정 *!/
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.confidence-title {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-.confidence-description {
-  font-size: 0.8em;
-  color: #666;
-}
-
-.confidence-slider {
-  flex-grow: 1;
-  min-width: 100px;
-  margin: 0 10px;
-}
-
-.confidence-value {
-  min-width: 40px;
-  text-align: right;
 }
 
 .confidence > input {
@@ -214,16 +177,26 @@ Vue.component('object-tracking-viz', {
     },
     template: `
     <div calss="object-tracking-container">
-        <div class="confidence-container">
-            <div class="confidence">
-                <div class="confidence-label">
-                    <span>정확성</span><br>
-                    <small class="confidence-description">(값을 높일수록 정확한 사물을 판단합니다.)</small>
-                </div>
-                    <input class="confidence-slider" type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
-                    <span class="confidence-value">{{confidence_threshold}}</span>      
-            </div>
+        
+        <div class="confidence">
+            <span>신뢰도 임계값</span>
+            
+            <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
+            <span class="confidence-value">{{confidence_threshold}}</span>
+            <br>
+            <pre style="font-size: medium">
+            반환할 예측을 결정하는 신뢰도 점수입니다. 모델이 이 값 이상인 예측을 반환합니다. 신뢰도 기준점이 높을수록 정밀도는 높아지지만 재현율이 낮아집니다.
+            </pre>
         </div>
+        
+        <!--<div class="confidence">
+            <div class="confidence-label">
+                <span>정확성</span><br>
+                <small class="confidence-description">(값을 높일수록 정확한 사물을 판단합니다.)</small>
+            </div>
+                <input class="confidence-slider" type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
+                <span class="confidence-value">{{confidence_threshold}}</span>      
+        </div>-->
 
         <div class="data-warning" v-if="object_tracks.length == 0"> No object tracking data in JSON</div>
 
