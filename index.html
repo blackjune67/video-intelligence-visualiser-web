@@ -219,10 +219,8 @@
                         v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
     </face-detection-viz>
 
-    <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'"
-                                    id="explicit_content_detection" v-bind:json_data="json_data"
-                                    v-bind:video_info="video_info"
-                                    v-on:shot-clicked="jump_video">
+    <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'" id="explicit_content_detection" v-bind:json_data="json_data"
+                        v-bind:video_info="video_info" v-on:shot-clicked="jump_video">
     </explicit-content-detection-viz>
 </div>
 
@@ -443,8 +441,8 @@
     json_input.addEventListener('change', load_json_dragged, false)
 
     // * JSON 로드
-    load_json_from_url("assets/test_json.json")
-    load_video_from_url("assets/test_video.mp4")
+    load_json_from_url("assets/output2_test_json.json")
+    load_video_from_url("assets/output2_test_video.mp4")
 
     // check for hash code in url
     if (app.$route.hash) {
