@@ -95,9 +95,22 @@ Vue.component('explicit-content-detection-viz', {
     template: `
     <div calss="shot_detection-container">
 
-    <div class="data-warning" v-if="explicit_frames_annotations.length == 0"> No explicit content detection data in JSON</div>
+    <div class="data-warning" v-if="explicit_frames_annotations.length == 0"> JSON에 정의된 컨텐츠 데이터가 없습니다.</div>
 
-    <div>Current explicit content likelihood : <span class="current-likelihood">{{current_likelihood}}</span> </div>
+    <div>위험성(폭력성) 분석 시 기준 Likely의 기준이 엄격합니다. 아래의 설명을 봐주세요.</div>
+    <br>
+    <div class="risk-level-title" style="text-align: left; margin: 0 auto; max-width: 600px;">
+            <div style="text-align: left;">
+                <span style="display: block;">VERY_LIKELY: 매우 높은 위험성</span><br>
+                <span style="display: block;">LIKELY: 높은 위험성</span><br>
+                <span style="display: block;">POSSIBLE: 보통</span><br>
+                <span style="display: block;">UNLIKELY: 보통 낮음</span><br>
+                <span style="display: block;">VERY_UNLIKELY: 아예 낮음 & 아닐 가능성이 높다</span><br>
+            </div>
+        </div>
+    <br>
+    
+    <div>현재 폭력적인 컨텐츠 가능성 : <span class="current-likelihood">{{current_likelihood}}</span> </div>
     <br>
 
     <div class="segment-container" v-for="segments, key in likelihood_segments" v-bind:key="key + 'z'">
