@@ -62,6 +62,13 @@ style.innerHTML = `
     transform: translateY(30px);
 }
 
+
+/*.confidence {
+    text-align: center;
+    margin: 20px;
+    font-size: 1.2em;
+}*/
+
 .confidence-container {
   display: flex;
   justify-content: center;
@@ -73,7 +80,7 @@ style.innerHTML = `
   align-items: center;
   gap: 10px;
   width: 20%;
-  min-width: 300px;  /* 최소 너비 설정 */
+  min-width: 300px;  /!* 최소 너비 설정 *!/
   white-space: nowrap;
   overflow: hidden;
 }
