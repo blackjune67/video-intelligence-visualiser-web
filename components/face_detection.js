@@ -159,7 +159,7 @@ Vue.component('face-detection-viz', {
             </pre>
         </div>
 
-        <div class="data-warning" v-if="face_tracks.length == 0"> No face detection data in JSON</div>
+        <div class="data-warning" v-if="face_tracks.length == 0">JSON에 정의된 얼굴 인식 데이터가 없습니다.</div>
 
         <div class="segment-container" v-for="segments, key in object_track_segments" v-bind:key="key + 'z'">
                 <div class="label">{{key}} ({{segments.count}})</div>
