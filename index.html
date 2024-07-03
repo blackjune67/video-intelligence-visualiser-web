@@ -3,9 +3,9 @@
 
 <head>
 
-    <title>Video Intelligence API Visualiser</title>
+    <title>하이버프 영상 인텔리전스 API 비주얼라이저</title>
     <link rel="icon" type="image/png" href="assets/icon.png" />
-
+    <meta charset="utf-8">
     <meta name="description" content="Interactive visualiser for the Google Cloud Video Intelligence API.">
     <meta name="keywords" content="google cloud, video, intelligence, api, video intelligence api, google cloud">
 
@@ -172,7 +172,7 @@
             </div>
             <div class="mdl-layout__header-row">
 
-                <span class="mdl-layout-title">Video Intelligence API Visualiser</span>
+                <span class="mdl-layout-title">하이버프 영상 인텔리전스 API 비주얼라이저</span>
             </div>
         </header>
 
@@ -184,14 +184,16 @@
 
 
         <div id="upload-data">
-            <h5>Try with your data</h5>
-            <p>You can analyse a video using the following script <a target="_blank"
+            <h5>영상 분석을 시도하세요!</h5>
+            <!--<p>You can analyse a video using the following script <a target="_blank"
                     href="https://github.com/ZackAkil/video-intelligence-api-visualiser/blob/main/run_video_intelligence.py">here</a>
                 if you want to run all features at once.
             </p>
 
             <p>This app <b><u>doesn't</u></b> send or store any of your video or annotation data. It just visualises
-                local data files.</p>
+                local data files.</p>-->
+            <p>하이버프 영상 분석 시스템입니다.</br>아래 영상과 json파일을 업로드하세요.</p>
+            <p>이 웹은 시연용 웹사이트입니다.</br>영상과 JSON파일을 저장하지 않습니다.</p>
             <div class="upload-area" ondrop="drop_video(event)" ondragover="drag_enter(event)">
                 <p>Your video</p>
                 <input id="video_input" type="file" accept="video/*" />
@@ -215,16 +217,6 @@
         <object-tracking-viz v-if="current_view == 'Object Tracking'" id="object_tracks" v-bind:json_data="json_data"
             v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></object-tracking-viz>
 
-        <label-detection-viz v-if="current_view == 'Label Detection'" id="label_detection" v-bind:json_data="json_data"
-            v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></label-detection-viz>
-
-        <shot-detection-viz v-if="current_view == 'Shot Detection'" id="shot_detection" v-bind:json_data="json_data"
-            v-bind:video_info="video_info" v-on:shot-clicked="jump_video"></shot-detection-viz>
-
-        <speech-transcription-viz v-if="current_view == 'Speech Transcription'" id="speech_transcription"
-            v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:word-clicked="jump_video">
-        </speech-transcription-viz>
-
         <person-detection-viz v-if="current_view == 'Person Detection'" id="person_detection"
             v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
         </person-detection-viz>
@@ -232,23 +224,7 @@
         <face-detection-viz v-if="current_view == 'Face Detection'" id="face_detection" v-bind:json_data="json_data"
             v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
         </face-detection-viz>
-
-        <logo-recognition-viz v-if="current_view == 'Logo Recognition'" id="logo_recognition"
-            v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
-        </logo-recognition-viz>
-
-        <text-detection-viz v-if="current_view == 'Text Detection'" id="text_detection" v-bind:json_data="json_data"
-            v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
-        </text-detection-viz>
-
-        <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'"
-            id="explicit_content_detection" v-bind:json_data="json_data" v-bind:video_info="video_info"
-            v-on:shot-clicked="jump_video">
-        </explicit-content-detection-viz>
-
     </div>
-
-
 
 
     <script src="utils/utils.js"></script>
@@ -324,14 +300,14 @@
                 video_length: 252,
                 current_view: 'Label Detection',
                 title_ids_dict: {
-                    'Label Detection': 'shot_label_annotations',
-                    'Shot Detection': 'shot_annotations',
+                    // 'Label Detection': 'label_annotations',
+                    // 'Shot Detection': 'shot_annotations',
                     'Object Tracking': 'object_annotations',
-                    'Person Detection': 'person_detection_annotations',
+                    // 'Person Detection': 'person_detection_annotations',
                     'Face Detection': 'face_detection_annotations',
-                    'Logo Recognition': 'logo_recognition_annotations',
-                    'Speech Transcription': 'speech_transcriptions',
-                    'Text Detection': 'text_annotations',
+                    // 'Logo Recognition': 'logo_recognition_annotations',
+                    // 'Speech Transcription': 'speech_transcriptions',
+                    // 'Text Detection': 'text_annotations',
                     'Explicit Content Detection': 'explicit_annotation'
                 }
             }, methods: {
@@ -469,12 +445,10 @@
         video_input.addEventListener('change', load_video_dragged, false)
         json_input.addEventListener('change', load_json_dragged, false)
 
-        load_json_from_url("assets/test_json.json")
+        load_json_from_url("assets/test_json_02.json")
         load_video_from_url("assets/test_video.mp4")
 
-
-        // check for hash code in url 
-
+        // check for hash code in url
         if (app.$route.hash) {
             const hash_value = decodeURI(app.$route.hash.substring(1))
             if (hash_value in app.title_ids_dict) {
@@ -482,11 +456,6 @@
             }
 
         }
-
-
-
     </script>
-
 </body>
-
 </html>
