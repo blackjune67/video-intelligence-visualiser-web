@@ -177,9 +177,8 @@
 
     <div id="video-conatiner">
         <canvas id="my_canvas" width="800" height="500"></canvas>
-        <video id="video" controls autoplay></video>
+        <video id="video" muted controls autoplay></video>
     </div>
-
 
     <div id="upload-data">
         <h5>영상 분석을 시도하세요!</h5>
@@ -307,7 +306,13 @@
                 // 'Text Detection': 'text_annotations',
                 // 'Explicit Content Detection': 'explicit_annotation'
             }
-        }, methods: {
+        }, mounted: function () {
+            document.addEventListener('keydown', this.handleKeydown);
+        },
+        beforeDestroy: function () {
+            document.removeEventListener('keydown', this.handleKeydown);
+        },
+        methods: {
             jump_video: function (event_data) {
                 document.querySelector('video').scrollIntoView({'behavior': 'smooth', 'block': 'center'})
                 jump_video_to_time(event_data.seconds)
@@ -315,8 +320,17 @@
             set_current_view: function (new_view) {
                 this.current_view = new_view
                 router.push({hash: '#' + new_view})
-
-
+            },
+            handleKeydown: function (event) {
+                event.preventDefault();
+                if (event.code === 'Space') {
+                    const video = document.querySelector('video');
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                }
             }
         },
         computed: {
