@@ -4,7 +4,7 @@
 <head>
 
     <title>하이버프 영상 인텔리전스 API 비주얼라이저</title>
-    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="icon" type="image/png" href="assets/icon.png"/>
     <meta charset="utf-8">
     <meta name="description" content="Interactive visualiser for the Google Cloud Video Intelligence API.">
     <meta name="keywords" content="google cloud, video, intelligence, api, video intelligence api, google cloud">
@@ -21,16 +21,16 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 
-<!-- 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N80GH8KX9W"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
+    <!--
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-N80GH8KX9W"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
 
-        gtag('config', 'G-N80GH8KX9W', { client_storage: 'none' });
+            gtag('config', 'G-N80GH8KX9W', { client_storage: 'none' });
 
-    </script> -->
+        </script> -->
 
 
     <style>
@@ -56,7 +56,7 @@
             display: inline-block;
         }
 
-        #video-conatiner>canvas {
+        #video-conatiner > canvas {
             width: 100%;
             position: absolute;
             opacity: 0.8;
@@ -88,7 +88,7 @@
             width: 250px;
         }
 
-        #upload-data>p {
+        #upload-data > p {
             text-align: justify;
         }
 
@@ -97,7 +97,7 @@
             text-align: center;
         }
 
-        .feature-tabs>div {
+        .feature-tabs > div {
             display: inline-block;
             font-size: 1.2em;
             padding: 12px;
@@ -110,16 +110,16 @@
             margin: 5px;
         }
 
-        .feature-tabs>div:hover {
+        .feature-tabs > div:hover {
             background-color: #4285f41a;
         }
 
 
-        .feature-tabs>.selected {
+        .feature-tabs > .selected {
             border-bottom: 2px solid #4285F4;
         }
 
-        .feature-tabs>.disabled {
+        .feature-tabs > .disabled {
             color: #cdcdcd;
         }
 
@@ -153,7 +153,7 @@
             font-size: 19px;
         }
 
-        .nav-tab>.material-icons {
+        .nav-tab > .material-icons {
             color: #0F9D58;
         }
     </style>
@@ -163,299 +163,297 @@
 <body>
 
 
+<div id="app" class="mdl-layout--fixed-header">
 
-    <div id="app" class="mdl-layout--fixed-header">
-
-        <header class="mdl-layout__header">
-            <div class="mdl-layout-icon">
-                <img class="logo" src="assets/icon.png">
-            </div>
-            <div class="mdl-layout__header-row">
-
-                <span class="mdl-layout-title">하이버프 영상 인텔리전스 API 비주얼라이저</span>
-            </div>
-        </header>
-
-        <div id="video-conatiner">
-            <canvas id="my_canvas" width="800" height="500"></canvas>
-            <video id="video" controls autoplay></video>
+    <header class="mdl-layout__header">
+        <div class="mdl-layout-icon">
+            <img class="logo" src="assets/icon.png">
         </div>
+        <div class="mdl-layout__header-row">
 
-
-
-        <div id="upload-data">
-            <h5>영상 분석을 시도하세요!</h5>
-            <!--<p>You can analyse a video using the following script <a target="_blank"
-                    href="https://github.com/ZackAkil/video-intelligence-api-visualiser/blob/main/run_video_intelligence.py">here</a>
-                if you want to run all features at once.
-            </p>
-
-            <p>This app <b><u>doesn't</u></b> send or store any of your video or annotation data. It just visualises
-                local data files.</p>-->
-            <p>하이버프 영상 분석 시스템입니다.</br>아래 영상과 json파일을 업로드하세요.</p>
-            <p>이 웹은 시연용 웹사이트입니다.</br>영상과 JSON파일을 저장하지 않습니다.</p>
-            <div class="upload-area" ondrop="drop_video(event)" ondragover="drag_enter(event)">
-                <p>Your video</p>
-                <input id="video_input" type="file" accept="video/*" />
-            </div>
-            <div class="upload-area" ondrop="drop_json(event)" ondragover="drag_enter(event)">
-                <p>Your .json</p>
-                <input id="json_input" type="file" accept="application/JSON" />
-            </div>
+            <span class="mdl-layout-title">하이버프 영상 인텔리전스 API 비주얼라이저</span>
         </div>
+    </header>
 
-        <div v-if="data_misaligned" class="data-warning">
-            It looks like the json data dosn't align with the video file, are you sure you have all of the right files
-            uploaded?
-        </div>
-
-
-        <annotations-nav v-bind:title_ids_dict="title_ids_dict" v-bind:detected_features="detected_features"
-            v-bind:current_view="current_view" v-on:nav-clicked="set_current_view">
-        </annotations-nav>
-
-        <object-tracking-viz v-if="current_view == 'Object Tracking'" id="object_tracks" v-bind:json_data="json_data"
-            v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></object-tracking-viz>
-
-        <person-detection-viz v-if="current_view == 'Person Detection'" id="person_detection"
-            v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
-        </person-detection-viz>
-
-        <face-detection-viz v-if="current_view == 'Face Detection'" id="face_detection" v-bind:json_data="json_data"
-            v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
-        </face-detection-viz>
+    <div id="video-conatiner">
+        <canvas id="my_canvas" width="800" height="500"></canvas>
+        <video id="video" controls autoplay></video>
     </div>
 
 
-    <script src="utils/utils.js"></script>
+    <div id="upload-data">
+        <h5>영상 분석을 시도하세요!</h5>
+        <!--<p>You can analyse a video using the following script <a target="_blank"
+                href="https://github.com/ZackAkil/video-intelligence-api-visualiser/blob/main/run_video_intelligence.py">here</a>
+            if you want to run all features at once.
+        </p>
 
-    <script src="components/object_tracking.js"></script>
-    <script src="components/label_detection.js"></script>
-    <script src="components/shot_detection.js"></script>
-    <script src="components/speech_transcription.js"></script>
-    <script src="components/person_detection.js"></script>
-    <script src="components/face_detection.js"></script>
-    <script src="components/logo_recognition.js"></script>
-    <script src="components/text_detection.js"></script>
-    <script src="components/explicit_content_detection.js"></script>
+        <p>This app <b><u>doesn't</u></b> send or store any of your video or annotation data. It just visualises
+            local data files.</p>-->
+        <p>하이버프 영상 분석 시스템입니다.</br>아래 영상과 json파일을 업로드하세요.</p>
+        <p>이 웹은 시연용 웹사이트입니다.</br>영상과 JSON파일을 저장하지 않습니다.</p>
+        <div class="upload-area" ondrop="drop_video(event)" ondragover="drag_enter(event)">
+            <p>샘플 영상을 업로드 하세요.</p>
+            <input id="video_input" type="file" accept="video/*"/>
+        </div>
+        <div class="upload-area" ondrop="drop_json(event)" ondragover="drag_enter(event)">
+            <p>샘플 JSON 파일을 업로드 하세요.</p>
+            <input id="json_input" type="file" accept="application/JSON"/>
+        </div>
+    </div>
 
-    <script>
-
-        function jump_video_to_time(time) {
-            const video = document.querySelector('video')
-            video.currentTime = time
-            video.play()
-        }
+    <div v-if="data_misaligned" class="data-warning">
+        It looks like the json data dosn't align with the video file, are you sure you have all of the right files
+        uploaded?
+    </div>
 
 
+    <annotations-nav v-bind:title_ids_dict="title_ids_dict" v-bind:detected_features="detected_features"
+                     v-bind:current_view="current_view" v-on:nav-clicked="set_current_view">
+    </annotations-nav>
 
-        // define component
-        Vue.component('annotations-nav-tab', {
-            props: ['title', 'current_view', 'data_id', 'detected_features'],
-            computed: {
-                has_data: function () {
-                    return this.detected_features.includes(this.data_id)
-                }
-            },
-            template: `
-            <div class="nav-tab" v-bind:class="{selected:current_view == title, disabled:(!has_data)}">{{title}}
-                <span v-if="has_data" class="material-icons">
+    <object-tracking-viz v-if="current_view == 'Object Tracking'" id="object_tracks" v-bind:json_data="json_data"
+                         v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></object-tracking-viz>
+
+    <face-detection-viz v-if="current_view == 'Face Detection'" id="face_detection" v-bind:json_data="json_data"
+                        v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+    </face-detection-viz>
+
+    <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'"
+                                    id="explicit_content_detection" v-bind:json_data="json_data"
+                                    v-bind:video_info="video_info"
+                                    v-on:shot-clicked="jump_video">
+    </explicit-content-detection-viz>
+</div>
+
+
+<script src="utils/utils.js"></script>
+
+<script src="components/object_tracking.js"></script>
+<script src="components/label_detection.js"></script>
+<script src="components/shot_detection.js"></script>
+<script src="components/speech_transcription.js"></script>
+<script src="components/person_detection.js"></script>
+<script src="components/face_detection.js"></script>
+<script src="components/logo_recognition.js"></script>
+<script src="components/text_detection.js"></script>
+<script src="components/explicit_content_detection.js"></script>
+
+<script>
+
+    function jump_video_to_time(time) {
+        const video = document.querySelector('video')
+        video.currentTime = time
+        video.play()
+    }
+
+
+    // define component
+    Vue.component('annotations-nav-tab', {
+        props: ['title', 'current_view', 'data_id', 'detected_features'],
+        computed: {
+            has_data: function () {
+                return this.detected_features.includes(this.data_id)
+            }
+        },
+        template: `
+          <div class="nav-tab" v-bind:class="{selected:current_view == title, disabled:(!has_data)}">{{ title }}
+            <span v-if="has_data" class="material-icons">
                     check_circle
                 </span>
-            </div>
-            `
-        })
+          </div>
+        `
+    })
 
-        Vue.component('annotations-nav', {
-            props: ['title_ids_dict', 'current_view', 'detected_features'],
-            methods: {
-                nav_clicked: function (title) {
-                    this.$emit('nav-clicked', title)
-                },
+    Vue.component('annotations-nav', {
+        props: ['title_ids_dict', 'current_view', 'detected_features'],
+        methods: {
+            nav_clicked: function (title) {
+                this.$emit('nav-clicked', title)
             },
-            template: `
-            <div class="feature-tabs">
-                <annotations-nav-tab v-for="id, title in title_ids_dict"
-                    v-bind:title="title" v-bind:data_id="id"
-                    v-bind:detected_features="detected_features" v-bind:current_view="current_view"
-                    v-on:click.native="nav_clicked(title)">
-                </annotations-nav-tab>
-            </div>
-            `
-        })
+        },
+        template: `
+          <div class="feature-tabs">
+            <annotations-nav-tab v-for="id, title in title_ids_dict"
+                                 v-bind:title="title" v-bind:data_id="id"
+                                 v-bind:detected_features="detected_features" v-bind:current_view="current_view"
+                                 v-on:click.native="nav_clicked(title)">
+            </annotations-nav-tab>
+          </div>
+        `
+    })
 
-        var router = new VueRouter({
-            mode: 'history',
-            // routes: { path: '/match/:id', component: test_com}
-        });
-
-
-
-        var app = new Vue({
-            router,
-            el: '#app',
-            data: {
-                json_data: {},
-                video_info: { width: 800, height: 500, length: 252 },
-                video_length: 252,
-                current_view: 'Label Detection',
-                title_ids_dict: {
-                    // 'Label Detection': 'label_annotations',
-                    // 'Shot Detection': 'shot_annotations',
-                    'Object Tracking': 'object_annotations',
-                    // 'Person Detection': 'person_detection_annotations',
-                    'Face Detection': 'face_detection_annotations',
-                    // 'Logo Recognition': 'logo_recognition_annotations',
-                    // 'Speech Transcription': 'speech_transcriptions',
-                    // 'Text Detection': 'text_annotations',
-                    'Explicit Content Detection': 'explicit_annotation'
-                }
-            }, methods: {
-                jump_video: function (event_data) {
-                    document.querySelector('video').scrollIntoView({ 'behavior': 'smooth', 'block': 'center' })
-                    jump_video_to_time(event_data.seconds)
-                },
-                set_current_view: function (new_view) {
-                    this.current_view = new_view
-                    router.push({ hash: '#' + new_view })
+    var router = new VueRouter({
+        mode: 'history',
+        // routes: { path: '/match/:id', component: test_com}
+    });
 
 
-                }
+    var app = new Vue({
+        router,
+        el: '#app',
+        data: {
+            json_data: {},
+            video_info: {width: 800, height: 500, length: 252},
+            video_length: 252,
+            current_view: 'Label Detection',
+            title_ids_dict: {
+                // 'Label Detection': 'label_annotations',
+                // 'Shot Detection': 'shot_annotations',
+                'Object Tracking': 'object_annotations',
+                // 'Person Detection': 'person_detection_annotations',
+                'Face Detection': 'face_detection_annotations',
+                'Explicit Content Detection': 'explicit_annotation'
+                // 'Logo Recognition': 'logo_recognition_annotations',
+                // 'Speech Transcription': 'speech_transcriptions',
+                // 'Text Detection': 'text_annotations',
+                // 'Explicit Content Detection': 'explicit_annotation'
+            }
+        }, methods: {
+            jump_video: function (event_data) {
+                document.querySelector('video').scrollIntoView({'behavior': 'smooth', 'block': 'center'})
+                jump_video_to_time(event_data.seconds)
             },
-            computed: {
-                data_misaligned: function () {
-                    console.log('delt')
-                    if (this.json_data)
-                        if (this.json_data.annotation_results) {
-                            const delta = this.video_info.length - this.json_data.annotation_results[0].segment.end_time_offset.seconds
-                            console.log('delt', delta)
-                            if (Math.abs(delta) > 2) {
-                                return true
-                            }
+            set_current_view: function (new_view) {
+                this.current_view = new_view
+                router.push({hash: '#' + new_view})
+
+
+            }
+        },
+        computed: {
+            data_misaligned: function () {
+                console.log('delt')
+                if (this.json_data)
+                    if (this.json_data.annotation_results) {
+                        const delta = this.video_info.length - this.json_data.annotation_results[0].segment.end_time_offset.seconds
+                        console.log('delt', delta)
+                        if (Math.abs(delta) > 2) {
+                            return true
                         }
-                    return false
-                },
-                detected_features: function () {
+                    }
+                return false
+            },
+            detected_features: function () {
 
-                    var features = []
+                var features = []
 
-                    if (!this.json_data.annotation_results)
-                        return features
-
-                    this.json_data.annotation_results.forEach(annotations => {
-                        console.log(Object.keys(annotations))
-                        features = features.concat(Object.keys(annotations))
-                    })
-
+                if (!this.json_data.annotation_results)
                     return features
-                }
+
+                this.json_data.annotation_results.forEach(annotations => {
+                    console.log(Object.keys(annotations))
+                    features = features.concat(Object.keys(annotations))
+                })
+
+                return features
+            }
+        }
+    })
+
+
+    const URL = window.URL || window.webkitURL
+
+    function fetch_json(url) {
+        var json = null
+        $.ajax({
+            'async': false,
+            'url': url,
+            'dataType': "json",
+            'success': function (data) {
+                json = data
             }
         })
+        return json
+    }
 
+    function load_video_from_url(url) {
+        video.src = url
+    }
 
+    function load_video_dragged(event) {
+        const file = this.files[0]
+        const file_url = URL.createObjectURL(file)
+        load_video_from_url(file_url)
+    }
 
-        const URL = window.URL || window.webkitURL
-
-        function fetch_json(url) {
-            var json = null
-            $.ajax({
-                'async': false,
-                'url': url,
-                'dataType': "json",
-                'success': function (data) {
-                    json = data
-                }
-            })
-            return json
-        }
-
-        function load_video_from_url(url) {
-            video.src = url
-        }
-
-        function load_video_dragged(event) {
-            const file = this.files[0]
-            const file_url = URL.createObjectURL(file)
-            load_video_from_url(file_url)
-        }
-
-        function load_json_from_url(url) {
-            var json = null
-            $.ajax({
-                'async': false,
-                'url': url,
-                'dataType': "json",
-                'success': function (data) {
-                    json = data
-                }
-            })
-            json_data = json
-
-            console.log(json_data)
-            app.json_data = json_data
-
-            console.log('keys ->>', Object.keys(json_data))
-            // check validity of json
-            if (!('annotation_results' in json_data)) {
-                alert("⚠️ Sorry, json output from shell not supported ⚠️ To fix set the 'output_uri' configuration when calling the Video Intelligence API so that it outputs a .json file to Google Cloud Storage, and then download that .json file. Find links to example script at the top right of the screen.")
-                json_input.value = null
+    function load_json_from_url(url) {
+        var json = null
+        $.ajax({
+            'async': false,
+            'url': url,
+            'dataType': "json",
+            'success': function (data) {
+                json = data
             }
+        })
+        json_data = json
 
+        console.log(json_data)
+        app.json_data = json_data
 
-
+        console.log('keys ->>', Object.keys(json_data))
+        // check validity of json
+        if (!('annotation_results' in json_data)) {
+            alert("⚠️ Sorry, json output from shell not supported ⚠️ To fix set the 'output_uri' configuration when calling the Video Intelligence API so that it outputs a .json file to Google Cloud Storage, and then download that .json file. Find links to example script at the top right of the screen.")
+            json_input.value = null
         }
 
-        function load_json_dragged(event) {
-            const file = this.files[0]
-            const file_url = URL.createObjectURL(file)
-            load_json_from_url(file_url);
+
+    }
+
+    function load_json_dragged(event) {
+        const file = this.files[0]
+        const file_url = URL.createObjectURL(file)
+        load_json_from_url(file_url);
+    }
+
+    var json_data = {}
+    const video = document.getElementById('video')
+    const video_input = document.getElementById('video_input')
+    const json_input = document.getElementById('json_input')
+
+
+    video.oncanplay = function () {
+        console.log("Can start playing video", video.duration, video.videoHeight, video.videoWidth)
+        app.video_info.length = video.duration
+        app.video_length.duration
+        app.video_info.height = 500
+        app.video_info.width = 800
+    }
+
+    function drag_enter(ev) {
+        ev.preventDefault()
+    }
+
+    function drop_video(ev) {
+        ev.preventDefault()
+        video_input.files = ev.dataTransfer.files
+        video_input.dispatchEvent(new Event('change'))
+
+    }
+
+    function drop_json(ev) {
+        ev.preventDefault()
+        json_input.files = ev.dataTransfer.files
+        json_input.dispatchEvent(new Event('change'))
+    }
+
+    video_input.addEventListener('change', load_video_dragged, false)
+    json_input.addEventListener('change', load_json_dragged, false)
+
+    // * JSON 로드
+    load_json_from_url("assets/test_json.json")
+    load_video_from_url("assets/test_video.mp4")
+
+    // check for hash code in url
+    if (app.$route.hash) {
+        const hash_value = decodeURI(app.$route.hash.substring(1))
+        if (hash_value in app.title_ids_dict) {
+            app.current_view = hash_value
         }
 
-        var json_data = {}
-        const video = document.getElementById('video')
-        const video_input = document.getElementById('video_input')
-        const json_input = document.getElementById('json_input')
-
-
-        video.oncanplay = function () {
-            console.log("Can start playing video", video.duration, video.videoHeight, video.videoWidth)
-            app.video_info.length = video.duration
-            app.video_length.duration
-            app.video_info.height = 500
-            app.video_info.width = 800
-        }
-
-        function drag_enter(ev) {
-            ev.preventDefault()
-        }
-
-        function drop_video(ev) {
-            ev.preventDefault()
-            video_input.files = ev.dataTransfer.files
-            video_input.dispatchEvent(new Event('change'))
-
-        }
-
-        function drop_json(ev) {
-            ev.preventDefault()
-            json_input.files = ev.dataTransfer.files
-            json_input.dispatchEvent(new Event('change'))
-        }
-
-        video_input.addEventListener('change', load_video_dragged, false)
-        json_input.addEventListener('change', load_json_dragged, false)
-
-        load_json_from_url("assets/test_json_02.json")
-        load_video_from_url("assets/test_video.mp4")
-
-        // check for hash code in url
-        if (app.$route.hash) {
-            const hash_value = decodeURI(app.$route.hash.substring(1))
-            if (hash_value in app.title_ids_dict) {
-                app.current_view = hash_value
-            }
-
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
