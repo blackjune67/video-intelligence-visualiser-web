@@ -87,7 +87,7 @@ Vue.component('label-detection-viz', {
     <div calss="label-detection-container">
 
         <div class="confidence">
-            <span>Confidence threshold</span>
+            <span>정확성 (값을 높일 수록 정확한 사물을 판단합니다.)</span>
             <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
             <span class="confidence-value">{{confidence_threshold}}</span>
         </div>

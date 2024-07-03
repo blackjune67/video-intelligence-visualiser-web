@@ -1,4 +1,3 @@
-
 console.log('IMPORTING OBJECT TRACKING')
 
 // define style rules to be programtically loaded
@@ -63,12 +62,41 @@ style.innerHTML = `
     transform: translateY(30px);
 }
 
-
+.confidence-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 
 .confidence {
-    text-align: center;
-    margin: 20px;
-    font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 20%;
+  min-width: 300px;  /* 최소 너비 설정 */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.confidence-title {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.confidence-description {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.confidence-slider {
+  flex-grow: 1;
+  min-width: 100px;
+  margin: 0 10px;
+}
+
+.confidence-value {
+  min-width: 40px;
+  text-align: right;
 }
 
 .confidence > input {
@@ -143,14 +171,14 @@ Vue.component('object-tracking-viz', {
             this.indexed_object_tracks.forEach(object_tracks => {
 
                 if (!(object_tracks.name in segments))
-                    segments[object_tracks.name] = {'segments':[], 'count':0}
+                    segments[object_tracks.name] = {'segments': [], 'count': 0}
 
                 segments[object_tracks.name].count++
 
                 var added = false
 
                 for (let index = 0; index < segments[object_tracks.name].length; index++) {
-                    
+
                     const segment = segments[object_tracks.name].segments[index]
                     if (object_tracks.start_time < segment[1]) {
                         segments[object_tracks.name].segments[index][1] = Math.max(segments[object_tracks.name].segments[index][1], object_tracks.end_time)
@@ -174,16 +202,20 @@ Vue.component('object-tracking-viz', {
             }
         },
         segment_clicked: function (segment_data) {
-            this.$emit('segment-clicked', { seconds: segment_data[0] -0.5 })
+            this.$emit('segment-clicked', {seconds: segment_data[0] - 0.5})
         }
     },
     template: `
     <div calss="object-tracking-container">
-
-        <div class="confidence">
-            <span>Confidence threshold</span>
-            <input type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
-            <span class="confidence-value">{{confidence_threshold}}</span>
+        <div class="confidence-container">
+            <div class="confidence">
+                <div class="confidence-label">
+                    <span>정확성</span><br>
+                    <small class="confidence-description">(값을 높일수록 정확한 사물을 판단합니다.)</small>
+                </div>
+                    <input class="confidence-slider" type="range" min="0.0" max="1" value="0.5" step="0.01" v-model="confidence_threshold">
+                    <span class="confidence-value">{{confidence_threshold}}</span>      
+            </div>
         </div>
 
         <div class="data-warning" v-if="object_tracks.length == 0"> No object tracking data in JSON</div>
@@ -214,18 +246,16 @@ Vue.component('object-tracking-viz', {
         this.interval_timer = setInterval(function () {
             console.log('running')
             const object_tracks = component.indexed_object_tracks
-            
+
             draw_bounding_boxes(object_tracks, ctx)
         }, 1000 / 30)
     },
-    beforeDestroy:function(){
+    beforeDestroy: function () {
         console.log('destroying component')
         clearInterval(this.interval_timer)
         this.ctx.clearRect(0, 0, 800, 500)
     }
 })
-
-
 
 
 class Object_Track {
