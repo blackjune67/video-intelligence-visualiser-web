@@ -13,14 +13,14 @@ function draw_bounding_boxes(object_tracks, ctx) {
 }
 
 function draw_bounding_box(box, name = null, ctx) {
-    ctx.strokeStyle = "#4285F4"
+    ctx.strokeStyle = "#fc9b03"
     ctx.beginPath()
     ctx.lineWidth = 3
     ctx.rect(box.x, box.y, box.width, box.height)
     ctx.stroke()
 
     if (name) {
-        ctx.fillStyle = "#4285F4"
+        ctx.fillStyle = "#fc9b03"
         ctx.fillRect(box.x, box.y, name.length * 13, 32)
         ctx.fillStyle = "#ffffff"
         ctx.fillText(name, box.x + 5, box.y + 22)

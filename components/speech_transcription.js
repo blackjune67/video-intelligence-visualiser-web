@@ -22,7 +22,7 @@ style.innerHTML = `
 }
 
 .current_speech{
-    border: solid 2px #4285F4;
+    border: solid 2px #fc9b03;
 }
 `;
 document.getElementsByTagName('head')[0].appendChild(style);
@@ -63,8 +63,8 @@ Vue.component('speech-transcription-viz', {
             if (this.detected_speech) {
 
                 this.detected_speech.forEach(element => {
-                    if(element.alternatives[0].transcript)
-                    indexed_speech.push(new Detected_Speech(element, this.current_time))
+                    if (element.alternatives[0].transcript)
+                        indexed_speech.push(new Detected_Speech(element, this.current_time))
                 })
             }
 
@@ -72,9 +72,9 @@ Vue.component('speech-transcription-viz', {
         },
     },
     methods: {
- 
+
         word_clicked: function (word_data) {
-            this.$emit('word-clicked', { seconds: word_data.start_time })
+            this.$emit('word-clicked', {seconds: word_data.start_time})
         },
     },
     template: `
@@ -109,7 +109,7 @@ class Detected_Word {
         this.word = json_data.word
         this.start_time = nullable_time_offset_to_seconds(json_data.start_time)
         this.end_time = nullable_time_offset_to_seconds(json_data.end_time)
-        this.current_word =  this.within_time(current_time)
+        this.current_word = this.within_time(current_time)
     }
 
     within_time(seconds) {
@@ -131,7 +131,7 @@ class Detected_Speech {
         this.end_time = this.words[this.words.length - 1].end_time
 
         this.current_speech = this.within_time(current_time)
-        
+
     }
 
     within_time(seconds) {

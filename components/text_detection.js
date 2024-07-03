@@ -108,7 +108,7 @@ Vue.component('text-detection-viz', {
             }
         },
         segment_clicked: function (seconds) {
-            this.$emit('segment-clicked', { seconds: seconds })
+            this.$emit('segment-clicked', {seconds: seconds})
         }
     },
     template: `
@@ -165,7 +165,6 @@ Vue.component('text-detection-viz', {
         }, 1000 / this.frame_rate)
 
 
-
         this.interval_timer_current_text = setInterval(function () {
             // console.log('running')
             component.current_time = video.currentTime
@@ -196,7 +195,7 @@ function draw_bounding_polys(object_tracks, ctx) {
 }
 
 function draw_bounding_poly(poly, name = null, ctx) {
-    ctx.strokeStyle = "#4285F4"
+    ctx.strokeStyle = "#fc9b03"
     ctx.beginPath()
     ctx.lineWidth = 3
 
@@ -208,15 +207,12 @@ function draw_bounding_poly(poly, name = null, ctx) {
     ctx.stroke()
 
     // if (name) {
-    //     ctx.fillStyle = "#4285F4"
+    //     ctx.fillStyle = "#fc9b03"
     //     ctx.fillRect(box.x, box.y, name.length * 13, 32)
     //     ctx.fillStyle = "#ffffff"
     //     ctx.fillText(name, box.x + 5, box.y + 22)
     // }
 }
-
-
-
 
 
 class Text_Frame {
@@ -227,7 +223,7 @@ class Text_Frame {
         this.poly = []
 
         json_data.rotated_bounding_box.vertices.forEach(vertex => {
-            this.poly.push({ x: vertex.x * video_width, y: vertex.y * video_height })
+            this.poly.push({x: vertex.x * video_width, y: vertex.y * video_height})
         })
 
     }
@@ -315,7 +311,6 @@ class Text_Segment {
     }
 
 }
-
 
 
 class Text_Detection {

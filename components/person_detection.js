@@ -56,7 +56,7 @@ Vue.component('person-detection-viz', {
             ` 
             create the list of cronological time segments that represent just when objects are present on screen
             `
-            const segments = { 'person': { 'segments': [], 'count': 0 } }
+            const segments = {'person': {'segments': [], 'count': 0}}
 
             this.indexed_person_tracks.forEach(object_tracks => {
 
@@ -89,7 +89,7 @@ Vue.component('person-detection-viz', {
             }
         },
         segment_clicked: function (segment_data) {
-            this.$emit('segment-clicked', { seconds: segment_data[0] })
+            this.$emit('segment-clicked', {seconds: segment_data[0]})
         }
     },
     template: `
@@ -173,7 +173,7 @@ function draw_person_landmarks(landmarks, ctx) {
 }
 
 function draw_person_bounding_box(box, ctx) {
-    ctx.strokeStyle = "#4285F4"
+    ctx.strokeStyle = "#fc9b03"
     ctx.beginPath()
     ctx.lineWidth = 3
     ctx.rect(box.x, box.y, box.width, box.height)
@@ -200,11 +200,13 @@ class Person_Frame {
 
         if (json_data.landmarks)
             json_data.landmarks.forEach(landmark => {
-                this.landmarks[landmark.name] = { 'x': landmark.point.x * video_width, 'y': landmark.point.y * video_height }
+                this.landmarks[landmark.name] = {
+                    'x': landmark.point.x * video_width,
+                    'y': landmark.point.y * video_height
+                }
             })
     }
 }
-
 
 
 class Person_Track {

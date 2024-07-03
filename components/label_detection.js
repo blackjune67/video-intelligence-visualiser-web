@@ -10,7 +10,7 @@ style.innerHTML = `
 
     color:  black;
     background-color: white;
-    border: solid 2px #4285F4;
+    border: solid 2px #fc9b03;
 }
 
 .current_labels > p {
@@ -77,7 +77,7 @@ Vue.component('label-detection-viz', {
             }
         },
         segment_clicked: function (segment_data) {
-            this.$emit('segment-clicked', { seconds: segment_data.start_time -0.5})
+            this.$emit('segment-clicked', {seconds: segment_data.start_time - 0.5})
         },
         label_on_screen: function (label) {
             return label.has_segment_for_time(this.current_time)
@@ -128,7 +128,6 @@ Vue.component('label-detection-viz', {
         // clearInterval(this.interval_timer)
     }
 })
-
 
 
 class Detected_Label_Segment {
