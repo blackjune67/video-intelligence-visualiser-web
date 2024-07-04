@@ -1,3 +1,4 @@
 .json filter=lfs diff=lfs merge=lfs -text
 .mp4 filter=lfs diff=lfs merge=lfs -text
 *.json filter=lfs diff=lfs merge=lfs -text
+assets/sample_merged_test_json.json filter=lfs diff=lfs merge=lfs -text
