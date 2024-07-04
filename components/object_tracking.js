@@ -198,7 +198,7 @@ Vue.component('object-tracking-viz', {
                 <span class="confidence-value">{{confidence_threshold}}</span>      
         </div>-->
 
-        <div class="data-warning" v-if="object_tracks.length == 0"> No object tracking data in JSON</div>
+        <div class="data-warning" v-if="object_tracks.length == 0">JSON파일에 정의된 오브젝트 데이터가 없습니다.</div>
 
         <transition-group name="segments" tag="div">
             

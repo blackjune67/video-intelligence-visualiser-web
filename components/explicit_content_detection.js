@@ -94,7 +94,7 @@ Vue.component('explicit-content-detection-viz', {
     },
     template: `
     <div calss="shot_detection-container">
-        <div class="data-warning" v-if="explicit_frames_annotations.length == 0">JSON에 정의된 컨텐츠 데이터가 없습니다.</div>
+        <div class="data-warning" v-if="explicit_frames_annotations.length == 0">JSON파일에 정의된 컨텐츠 데이터가 없습니다.</div>
     <br>
     
         <div>현재 폭력적인 컨텐츠 가능성 : <span class="current-likelihood">{{current_likelihood}}</span> </div>

@@ -3,7 +3,7 @@
 
 <head>
 
-    <title>하이버프 영상 인텔리전스 API 비주얼라이저</title>
+    <title>하이버프 AI 영상 분석</title>
     <link rel="icon" type="image/png" href="assets/icon.png"/>
     <meta charset="utf-8">
     <meta name="description" content="Interactive visualiser for the Google Cloud Video Intelligence API.">
@@ -171,7 +171,7 @@
         </div>
         <div class="mdl-layout__header-row">
 
-            <span class="mdl-layout-title">하이버프 영상 인텔리전스 API 비주얼라이저</span>
+            <span class="mdl-layout-title">하이버프 AI 영상 분석</span>
         </div>
     </header>
 
@@ -182,13 +182,7 @@
 
     <div id="upload-data">
         <h5>영상 분석을 시도하세요!😎</h5>
-        <!--<p>You can analyse a video using the following script <a target="_blank"
-                href="https://github.com/ZackAkil/video-intelligence-api-visualiser/blob/main/run_video_intelligence.py">here</a>
-            if you want to run all features at once.
-        </p>
 
-        <p>This app <b><u>doesn't</u></b> send or store any of your video or annotation data. It just visualises
-            local data files.</p>-->
         <p>하이버프 영상 분석 시스템입니다.</br>아래 영상과 json파일을 업로드하세요.</p>
         <p>영상과 JSON파일의 싱크를 맞춰 결과값을 보여주는 시연용 웹 사이트입니다.</p>
         <p>이 웹사이트는 영상과 JSON파일을 저장하지 않습니다.</p>
@@ -199,8 +193,9 @@
         </div>
         <div class="upload-area" ondrop="drop_json(event)" ondragover="drag_enter(event)">
             <p>샘플 JSON 파일을 업로드 하세요.</p>
-            <input id="json_input" type="file" accept="application/JSON"/>
+            <input id="json_input" type="file" multiple accept="application/JSON"/>
         </div>
+        <a id="download_link" href="#" style="display:none;">합쳐진 JSON 파일 다운로드</a>
     </div>
 
     <div v-if="data_misaligned" class="data-warning">
@@ -303,7 +298,6 @@
                 'Face Detection': 'face_detection_annotations',
                 'Explicit Content Detection': 'explicit_annotation'
                 // 'Logo Recognition': 'logo_recognition_annotations',
-                // 'Speech Transcription': 'speech_transcriptions',
                 // 'Text Detection': 'text_annotations',
                 // 'Explicit Content Detection': 'explicit_annotation'
             }
@@ -390,8 +384,10 @@
         load_video_from_url(file_url)
     }
 
+    // * JSON 처리 함수
     function load_json_from_url(url) {
         var json = null
+        const fileInput = document.getElementById('json_input');
         $.ajax({
             'async': false,
             'url': url,
@@ -406,13 +402,12 @@
         app.json_data = json_data
 
         console.log('keys ->>', Object.keys(json_data))
-        // check validity of json
-        if (!('annotation_results' in json_data)) {
-            alert("⚠️ Sorry, json output from shell not supported ⚠️ To fix set the 'output_uri' configuration when calling the Video Intelligence API so that it outputs a .json file to Google Cloud Storage, and then download that .json file. Find links to example script at the top right of the screen.")
+
+        // * check validity of json
+        if (fileInput.files.length === 1 && !('annotation_results' in json_data)) {
+            alert("⚠️ JSON 파일이 잘못 됐습니다. ⚠️\nJSON 파일 데이터 내에 annotation_results가 없습니다.\n올바른 JSON 파일을 업로드 해주세요.")
             json_input.value = null
         }
-
-
     }
 
     function load_json_dragged(event) {
@@ -421,11 +416,84 @@
         load_json_from_url(file_url);
     }
 
+    document.getElementById('json_input').addEventListener('change', function () {
+        const fileInput = document.getElementById('json_input');
+        if (fileInput.files.length > 2) {
+            alert('2개 이상의 파일은 업로드 할 수 없습니다.');
+            fileInput.value = ''; // 선택된 파일 초기화
+        } else {
+            // load_json_dragged.call(fileInput);
+            handle_json_files(this.files)
+        }
+    });
+
+    function handle_json_files(files) {
+        let fileA = null;
+        let fileB = null;
+
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const jsonData = JSON.parse(event.target.result);
+                if (jsonData.annotation_results) {
+                    fileA = file;
+                    jsonA = jsonData;
+                } else if (jsonData.explicit_annotation) {
+                    fileB = file;
+                    // json_data.annotation_results[index].explicit_annotation.frames
+                    jsonB = jsonData;
+                }
+
+                // 두 파일이 모두 로드되면 병합
+                if (fileA && fileB) {
+                    merge_json();
+                }
+            };
+            reader.readAsText(file);
+
+        });
+    }
+
+    function merge_json() {
+        if (jsonA && jsonB) {
+            jsonA.annotation_results.forEach(result => {
+                if (result.explicit_annotation) {
+                    result.explicit_annotation = jsonB.explicit_annotation;
+                }
+            });
+            const mergedJsonData = JSON.stringify(jsonA, null, 2);
+            update_download_link(mergedJsonData, 'merged_data.json');
+            const blob = new Blob([mergedJsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            load_json_from_url(url);
+        }
+    }
+
+    function update_download_link(jsonData, filename) {
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.getElementById('download_link');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.style.display = 'inline';
+    }
+
+    /*function save_json_to_file(jsonData, fileName) {
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }*/
+
     var json_data = {}
     const video = document.getElementById('video')
     const video_input = document.getElementById('video_input')
     const json_input = document.getElementById('json_input')
-
 
     video.oncanplay = function () {
         console.log("Can start playing video", video.duration, video.videoHeight, video.videoWidth)
