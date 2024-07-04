@@ -159,7 +159,7 @@ Vue.component('face-detection-viz', {
             </pre>
         </div>
 
-        <div class="data-warning" v-if="face_tracks.length == 0">JSON에 정의된 얼굴 인식 데이터가 없습니다.</div>
+        <div class="data-warning" v-if="face_tracks.length == 0">JSON파일에 정의된 얼굴 인식 데이터가 없습니다.</div>
 
         <div class="segment-container" v-for="segments, key in object_track_segments" v-bind:key="key + 'z'">
                 <div class="label">{{key}} ({{segments.count}})</div>
@@ -172,8 +172,7 @@ Vue.component('face-detection-viz', {
         </div>
 
 
-        <transition-group name="segments" tag="div">
-      
+        <transition-group name="segments" tag="div">      
                 <div class="face "  v-for="face in indexed_face_tracks" v-on:click="segment_clicked(face.start_time)" v-bind:key="face.thumbnail">
                     <img v-bind:src="'data:image/png;base64, ' +  face.thumbnail" > </img>
                     <div>
