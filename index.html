@@ -52,16 +52,18 @@
 
             position: relative;
             width: 800px;
+            height: 450px;
             margin: 15px;
             display: inline-block;
+            overflow: hidden;
         }
 
         #video-conatiner > canvas {
             width: 100%;
+            height: 100%;
             position: absolute;
             opacity: 0.8;
             left: 0;
-            height: 100%;
             pointer-events: none;
         }
 
@@ -69,6 +71,7 @@
             width: 100%;
             margin: auto;
             display: block;
+            object-fit: cover;
         }
 
         video::-webkit-media-controls-fullscreen-button {
