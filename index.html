@@ -321,9 +321,9 @@
                 router.push({hash: '#' + new_view})
             },
             handleKeydown: function (event) {
-                event.preventDefault();
                 if (event.code === 'Space') {
                     const video = document.querySelector('video');
+                    event.preventDefault();
                     if (video.paused) {
                         video.play();
                     } else {
