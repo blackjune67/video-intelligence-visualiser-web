@@ -533,9 +533,9 @@
 
     let wsUrl;
     if (window.location.protocol === 'https:') {
-        wsUrl = `wss://${GCP_SERVER_IP}`;
+        wsUrl = `wss://${GCP_SERVER_IP}:443`;
     } else {
-        wsUrl = `ws://${GCP_SERVER_IP}`;
+        wsUrl = `ws://${GCP_SERVER_IP}:443`;
     }
 
     const player = new JSMpeg.Player(wsUrl, {
