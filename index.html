@@ -526,9 +526,9 @@
 
     let wsUrl;
     if (window.location.protocol === 'https:') {
-        wsUrl = `wss://${window.location.hostname}:8080`;
+        wsUrl = `wss://${window.location.hostname}:5580`;
     } else {
-        wsUrl = `ws://${window.location.hostname}:8080`;
+        wsUrl = `ws://${window.location.hostname}:5580`;
     }
 
     const player = new JSMpeg.Player(wsUrl, {
