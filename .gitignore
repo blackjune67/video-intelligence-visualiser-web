@@ -44,6 +44,9 @@
 # *.iml
 # *.ipr
 
+# 의존성 디렉토리
+node_modules/
+
 # CMake
 cmake-build-*/
 

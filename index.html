@@ -159,6 +159,17 @@
         .nav-tab > .material-icons {
             color: #0F9D58;
         }
+
+        .pip-video {
+            position: fixed;
+            width: 640px;
+            height: 360px;
+            bottom: 20px;
+            right: 20px;
+            border: 1px solid #ccc;
+            background-color: black;
+            z-index: 1000;
+        }
     </style>
 </head>
 
@@ -220,6 +231,10 @@
     <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'" id="explicit_content_detection" v-bind:json_data="json_data"
                         v-bind:video_info="video_info" v-on:shot-clicked="jump_video">
     </explicit-content-detection-viz>
+
+    <div id="pip-container">
+        <canvas id="pip-video" class="pip-video"></video>
+    </div>
 </div>
 
 
@@ -235,6 +250,8 @@
 <script src="components/text_detection.js"></script>
 <script src="components/explicit_content_detection.js"></script>
 
+<script src="jsmpeg.min.js"></script>
+
 <script>
 
     function jump_video_to_time(time) {
@@ -243,7 +260,6 @@
         video.pause();
         // video.
     }
-
 
     // define component
     Vue.component('annotations-nav-tab', {
@@ -482,17 +498,62 @@
         downloadLink.style.display = 'inline';
     }
 
-    /*function save_json_to_file(jsonData, fileName) {
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }*/
+    const pipVideo = document.getElementById('pip-video');
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    pipVideo.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - pipVideo.getBoundingClientRect().left;
+        offsetY = e.clientY - pipVideo.getBoundingClientRect().top;
+        pipVideo.style.cursor = 'grabbing'; // 커서 모양 변경
+    });
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            pipVideo.style.left = `${e.clientX - offsetX}px`;
+            pipVideo.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        pipVideo.style.cursor = 'move'; // 커서 모양 복구
+    });
+
+
+
+    const mediaSource = new MediaSource();
+    pipVideo.src = URL.createObjectURL(mediaSource);
+
+    let wsUrl;
+    if (window.location.protocol === 'https:') {
+        wsUrl = `wss://${window.location.hostname}:8080`;
+    } else {
+        wsUrl = `ws://${window.location.hostname}:8080`;
+    }
+
+    const player = new JSMpeg.Player(wsUrl, {
+        canvas: pipVideo  // canvas 요소 대신 video 요소를 직접 사용
+    });
+
+    // WebSocket 연결 관리
+    function checkConnection() {
+        if (player.client.socket.readyState === WebSocket.CLOSED) {
+            console.log('Connection is closed. Attempting to reconnect...');
+            player.destroy();
+            player = new JSMpeg.Player(wsUrl, {
+                canvas: pipVideo
+            });
+        }
+    }
+
+    // 주기적으로 연결 확인
+    setInterval(checkConnection, 10000);
+
+    // 에러 처리
+    pipVideo.onerror = (error) => {
+        console.error('Video error:', error);
+    };
+
 
     var json_data = {}
     const video = document.getElementById('video')
