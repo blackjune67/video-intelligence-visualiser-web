@@ -12,9 +12,11 @@ import re
 GCS_BUCKET = "highbuff_developer_seoul"
 INPUT_PREFIX = "visualize-input/" # RTSP (실시간) 영상 저장 폴더의 경로
 TEMP_OUTPUT_PREFIX = "temp-output-json-files/" # 구글 비디오 영상 분석 업로드된 JSON파일의 경로
-AWS_OUTPUT_PREFIX = "visualize-aws-output-files/" # AWS에 업로드된 JSON파일 (explicit_annotation)의 경로
-FINAL_OUTPUT_PREFIX = "visualize-final-output-files/" # 최종 JSON파일의 경로
+AWS_OUTPUT_PREFIX = "visualize-aws-output-files/" # AWS에 업로드된 JSON 파일 (explicit_annotation)의 경로
+FINAL_OUTPUT_PREFIX = "visualize-final-output-files/" # 최종 합쳐진 JSON 파일의 경로
+VIEW_FINAL_OUTPUT_PREFIX = "visualize-view-final-output-files/" # 웹에서 보여질 파일의 경로
 
+# 영상 변환
 def process_video(video_name, gcs_client, timeout=1800):
     # {datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.json
 
@@ -142,8 +144,14 @@ def merge_json_files(gcs_client):
         merged_filename = f"merged_{timestamp}.json"
         merged_blob = bucket.blob(f"{FINAL_OUTPUT_PREFIX}{merged_filename}")
         merged_blob.upload_from_string(json.dumps(temp_data))
+
+        # 병합된 JSON을 final_output.json으로 저장
+        final_finlename= "final_output.json"
+        final_output_blob = bucket.blob(f"{VIEW_FINAL_OUTPUT_PREFIX}{final_finlename}")
+        final_output_blob.upload_from_string(json.dumps(temp_data))
         
         print(f"병합된 JSON 파일 저장 완료: gs://{GCS_BUCKET}/{FINAL_OUTPUT_PREFIX}{merged_filename}")
+        print(f"복사된 최종 JSON 파일 저장 완료: gs://{GCS_BUCKET}/{VIEW_FINAL_OUTPUT_PREFIX}{final_finlename}")
 
 
 # 최신 영상 가져오기
