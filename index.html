@@ -99,6 +99,10 @@
         .feature-tabs {
             margin: 30px;
             text-align: center;
+            display: flex; /* 추가된 부분 */
+            justify-content: center; /* 추가된 부분 */
+            gap: 10px; /* 추가된 부분 */
+            align-items: center; /* 추가된 부분 */
         }
 
         .feature-tabs > div {
@@ -170,6 +174,21 @@
             border: 1px solid #ccc;
             background-color: black;
             z-index: 1000;
+        }
+
+        #toggle-pip-button {
+            margin: 0; /* 수정된 부분 */
+            padding: 12px; /* 수정된 부분 */
+            cursor: pointer;
+            background-color: #fc9b03;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em; /* 추가된 부분 */
+        }
+
+        #toggle-pip-button:hover {
+            background-color: #e88a02;
         }
     </style>
 </head>
@@ -293,6 +312,8 @@
                                  v-bind:detected_features="detected_features" v-bind:current_view="current_view"
                                  v-on:click.native="nav_clicked(title)">
             </annotations-nav-tab>
+            <!-- 추가된 부분 -->
+            <button id="toggle-pip-button" onclick="togglePip()">Toggle PIP</button>
           </div>
         `
     })
@@ -396,7 +417,9 @@
     }
 
     function load_video_from_url(url) {
-        video.src = url
+        const timestamp = new Date().getTime();
+        const urlWithTimestamp = `${url}?t=${timestamp}`;
+        video.src = urlWithTimestamp;
     }
 
     function load_video_dragged(event) {
@@ -405,30 +428,55 @@
         load_video_from_url(file_url)
     }
 
-    // * JSON 처리 함수
+    // * 기존 JSON 처리 함수
+    // function load_json_from_url(url) {
+    //     var json = null
+    //     const fileInput = document.getElementById('json_input');
+    //     $.ajax({
+    //         'async': false,
+    //         'url': url,
+    //         'dataType': "json",
+    //         'success': function (data) {
+    //             json = data
+    //         }
+    //     })
+    //     json_data = json
+
+    //     console.log(json_data)
+    //     app.json_data = json_data
+
+    //     console.log('keys ->>', Object.keys(json_data))
+
+    //     // * check validity of json
+    //     if (fileInput.files.length === 1 && !('annotation_results' in json_data)) {
+    //         alert("⚠️ JSON 파일이 잘못 됐습니다. ⚠️\nJSON 파일 데이터 내에 annotation_results가 없습니다.\n올바른 JSON 파일을 업로드 해주세요.")
+    //         json_input.value = null
+    //     }
+    // }
+
+    // * 재 작성 JSON 처리 함수
     function load_json_from_url(url) {
-        var json = null
-        const fileInput = document.getElementById('json_input');
         $.ajax({
-            'async': false,
-            'url': url,
-            'dataType': "json",
-            'success': function (data) {
-                json = data
+            url: url,
+            dataType: "json",
+            cache: false,
+            success: function (data) {
+                json_data = data;
+                console.log(json_data);
+                app.json_data = json_data;
+
+                console.log('keys ->>', Object.keys(json_data));
+
+                // * check validity of json
+                if (document.getElementById('json_input').files.length === 1 && !('annotation_results' in json_data)) {
+                    alert("⚠️ JSON 파일이 잘못 됐습니다. ⚠️\nJSON 파일 데이터 내에 annotation_results가 없습니다.\n올바른 JSON 파일을 업로드 해주세요.");
+                    document.getElementById('json_input').value = null;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("JSON 파일을 불러오는 중 오류가 발생했습니다: ", textStatus, errorThrown);
             }
-        })
-        json_data = json
-
-        console.log(json_data)
-        app.json_data = json_data
-
-        console.log('keys ->>', Object.keys(json_data))
-
-        // * check validity of json
-        if (fileInput.files.length === 1 && !('annotation_results' in json_data)) {
-            alert("⚠️ JSON 파일이 잘못 됐습니다. ⚠️\nJSON 파일 데이터 내에 annotation_results가 없습니다.\n올바른 JSON 파일을 업로드 해주세요.")
-            json_input.value = null
-        }
+        });
     }
 
     function load_json_dragged(event) {
@@ -520,6 +568,14 @@
         pipVideo.style.cursor = 'move'; // 커서 모양 복구
     });
 
+    function togglePip() {
+        const pipContainer = document.getElementById('pip-container');
+        if (pipContainer.style.display === 'none' || pipContainer.style.display === '') {
+            pipContainer.style.display = 'block';
+        } else {
+            pipContainer.style.display = 'none';
+        }
+    }
 
     const GCP_SERVER_IP = CONFIG.GCP_SERVER_IP; // GCP 서버의 외부 IP 주소
     const GCP_SERVER_PORT = CONFIG.GCP_SERVER_PORT; // GCP 서버의 포트 번호
@@ -598,9 +654,10 @@
     json_input.addEventListener('change', load_json_dragged, false)
 
     // * JSON 로드
-    load_json_from_url("assets/sample_test_json.json")
-    load_video_from_url("assets/sample_test_video.mp4")
-
+    // load_json_from_url("assets/sample_test_json.json")
+    load_json_from_url("https://storage.googleapis.com/highbuff_developer_seoul/visualize-view-final-output-files/final_output.json")
+    load_video_from_url("https://storage.googleapis.com/highbuff_developer_seoul/visualize-view-final-output-files/final_output.mp4")
+    
     // check for hash code in url
     if (app.$route.hash) {
         const hash_value = decodeURI(app.$route.hash.substring(1))
