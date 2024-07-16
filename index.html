@@ -273,6 +273,63 @@
 <script src="jsmpeg.min.js"></script>
 
 <script>
+    window.onload = function() {
+        // 브라우저 캐시 무효화
+        if ('serviceWorker' in navigator) {
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+        }
+
+        // fetchLatestFiles(); // 로드 시 최신 파일을 불러옴.
+    };
+
+    async function fetchLatestFiles() {
+        try {
+            const response = await fetch('http://localhost:8080/latest-files');
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            const { latestVideo, latestJson } = await response.json();
+            console.log('==> latestJson : ', latestJson)
+
+            const videoUrl = `https://storage.googleapis.com/highbuff_developer_seoul/${latestVideo}`;
+            const jsonUrl = `https://storage.googleapis.com/highbuff_developer_seoul/${latestJson}`;
+
+            const videoTimestamp = latestVideo.match(/temp_(\d{8}_\d{6})\.mp4/)[1];
+            const jsonTimestamp = latestJson.match(/merged_(\d{8}_\d{6})\.json/)[1];
+
+            // 같은 타임스탬프가 아니면 재생하지 않도록.
+            if (videoTimestamp !== jsonTimestamp) {
+                console.log('Video and JSON timestamps do not match. Skipping load.');
+                return;
+            }
+
+            console.log('==> json URL : ', jsonUrl)
+
+            const videoResponse = await fetch(videoUrl);
+            if (!videoResponse.ok) {
+                throw new Error('Network response was not ok ' + videoResponse.statusText);
+            }
+            const videoBlob = await videoResponse.blob();
+            const videoObjectUrl = URL.createObjectURL(videoBlob);
+            document.getElementById('video').src = videoObjectUrl;
+
+            const jsonResponse = await fetch(jsonUrl);
+            if (!jsonResponse.ok) {
+                throw new Error('Network response was not ok ' + jsonResponse.statusText);
+            }
+            const jsonData = await jsonResponse.json();
+            console.log(jsonData);
+
+            app.json_data = jsonData;
+
+        } catch (error) {
+            console.error('Fetch error: ', error);
+        }
+    }
 
     function jump_video_to_time(time) {
         const video = document.querySelector('video')
@@ -372,11 +429,9 @@
         },
         computed: {
             data_misaligned: function () {
-                console.log('delt')
                 if (this.json_data)
                     if (this.json_data.annotation_results) {
                         const delta = this.video_info.length - this.json_data.annotation_results[0].segment.end_time_offset.seconds
-                        console.log('delt', delta)
                         if (Math.abs(delta) > 2) {
                             return true
                         }
@@ -391,7 +446,6 @@
                     return features
 
                 this.json_data.annotation_results.forEach(annotations => {
-                    console.log(Object.keys(annotations))
                     features = features.concat(Object.keys(annotations))
                 })
 
@@ -409,6 +463,7 @@
             'async': false,
             'url': url,
             'dataType': "json",
+            'cache': false,
             'success': function (data) {
                 json = data
             }
@@ -420,6 +475,7 @@
         const timestamp = new Date().getTime();
         const urlWithTimestamp = `${url}?t=${timestamp}`;
         video.src = urlWithTimestamp;
+        // video.src = url
     }
 
     function load_video_dragged(event) {
@@ -465,7 +521,7 @@
                 console.log(json_data);
                 app.json_data = json_data;
 
-                console.log('keys ->>', Object.keys(json_data));
+                // console.log('keys ->>', Object.keys(json_data));
 
                 // * check validity of json
                 if (document.getElementById('json_input').files.length === 1 && !('annotation_results' in json_data)) {
@@ -602,7 +658,7 @@
 
     // WebSocket 연결 관리
     function checkConnection() {
-        if (player.client.socket.readyState === WebSocket.CLOSED) {
+        if (player.client && player.client.socket && player.client.socket.readyState === WebSocket.CLOSED) {
             console.log('Connection is closed. Attempting to reconnect...');
             player.destroy();
             player = new JSMpeg.Player(wsUrl, {
@@ -653,11 +709,13 @@
     video_input.addEventListener('change', load_video_dragged, false)
     json_input.addEventListener('change', load_json_dragged, false)
 
+    
+
     // * JSON 로드
     // load_json_from_url("assets/sample_test_json.json")
     load_json_from_url("https://storage.googleapis.com/highbuff_developer_seoul/visualize-view-final-output-files/final_output.json")
     load_video_from_url("https://storage.googleapis.com/highbuff_developer_seoul/visualize-view-final-output-files/final_output.mp4")
-    
+
     // check for hash code in url
     if (app.$route.hash) {
         const hash_value = decodeURI(app.$route.hash.substring(1))
@@ -666,6 +724,8 @@
         }
 
     }
+
+    // window.onload = fetchLatestFiles;
 </script>
 </body>
 </html>
