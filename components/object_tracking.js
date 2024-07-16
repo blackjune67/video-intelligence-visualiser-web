@@ -224,7 +224,7 @@ Vue.component('object-tracking-viz', {
         const component = this
 
         this.interval_timer = setInterval(function () {
-            console.log('running')
+            // console.log('running')
             const object_tracks = component.indexed_object_tracks
 
             draw_bounding_boxes(object_tracks, ctx)

@@ -44,6 +44,9 @@
 # *.iml
 # *.ipr
 
+# 파이썬 가상 폴더
+myenv/
+
 # 의존성 디렉토리
 node_modules/
 
