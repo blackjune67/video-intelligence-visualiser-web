@@ -17,8 +17,6 @@ AWS_OUTPUT_PREFIX = "visualize-aws-output-files/" # AWS에 업로드된 JSON 파
 FINAL_OUTPUT_PREFIX = "visualize-final-output-files/" # 최종 합쳐진 JSON 파일의 경로
 VIEW_FINAL_OUTPUT_PREFIX = "visualize-view-final-output-files/" # 웹에서 보여질 파일의 경로
 
-
-
 # 재시도 로직을 포함한 파일 업로드 함수
 def upload_blob_with_retry(blob, data, retries=5, delay=1):
     for attempt in range(retries):
@@ -127,62 +125,6 @@ def get_files_with_timestamps(gcs_client, prefix):
     
     return files_with_timestamps
 
-
-# AWS, GCP의 JSON 병합
-# def merge_json_files(gcs_client):
-    aws_files = get_files_with_timestamps(gcs_client, AWS_OUTPUT_PREFIX)
-    temp_files = get_files_with_timestamps(gcs_client, TEMP_OUTPUT_PREFIX)
-    
-    matching_timestamps = set(aws_files.keys()) & set(temp_files.keys())
-    # matching_timestamps = set(aws_files.keys()) | set(temp_files.keys())
-    
-    for timestamp in matching_timestamps:
-        aws_file = aws_files[timestamp]
-        temp_file = temp_files[timestamp]
-        # aws_file = aws_files.get(timestamp)
-        # temp_file = temp_files.get(timestamp)
-        
-        print(f"매칭되는 파일 발견: \nAWS: {aws_file}\nTemp: {temp_file}")
-        
-        bucket = gcs_client.bucket(GCS_BUCKET)
-        
-        if aws_file:
-            # AWS JSON 파일 읽기
-            aws_blob = bucket.blob(aws_file)
-            aws_data = json.loads(aws_blob.download_as_text())
-        else:
-            aws_data = {}
-        
-        # Temp JSON 파일 읽기
-        temp_blob = bucket.blob(temp_file)
-        temp_data = json.loads(temp_blob.download_as_text())
-        
-        # JSON 병합
-        if 'annotation_results' in temp_data and len(temp_data['annotation_results']) > 0:
-            # GCP 데이터의 첫 번째 annotation_result에 AWS 데이터 추가
-            temp_data['annotation_results'][0]['explicit_annotation'] = aws_data.get('explicit_annotation', {})
-        else:
-            # annotation_results가 없거나 비어있는 경우 새로 생성
-            temp_data['annotation_results'] = [{
-                'face_detection_annotations': [],
-                'explicit_annotation': aws_data.get('explicit_annotation', {}),
-                'object_annotations': []
-            }]
-        
-        # 병합된 JSON 저장
-        merged_filename = f"merged_{timestamp}.json"
-        merged_blob = bucket.blob(f"{FINAL_OUTPUT_PREFIX}{merged_filename}")
-        merged_blob.upload_from_string(json.dumps(temp_data))
-        
-
-        # 병합된 JSON을 final_output.json으로 저장
-        final_finlename= "final_output.json"
-        final_output_blob = bucket.blob(f"{VIEW_FINAL_OUTPUT_PREFIX}{final_finlename}")
-        final_output_blob.upload_from_string(json.dumps(temp_data))
-        
-        print(f"병합된 JSON 파일 저장 완료: gs://{GCS_BUCKET}/{FINAL_OUTPUT_PREFIX}{merged_filename}")
-        print(f"복사된 최종 JSON 파일 저장 완료: gs://{GCS_BUCKET}/{VIEW_FINAL_OUTPUT_PREFIX}{final_finlename}")
-
 def merge_json_files(gcs_client, temp_filename):
     aws_files = get_files_with_timestamps(gcs_client, AWS_OUTPUT_PREFIX)
     
@@ -228,8 +170,6 @@ def merge_json_files(gcs_client, temp_filename):
         }]
     
     # 병합된 JSON 저장
-    # merged_filename = f"merged_{timestamp}.json"
-    # merged_blob = bucket.blob(f"{FINAL_OUTPUT_PREFIX}{merged_filename}")
     merged_blob.upload_from_string(json.dumps(temp_data))
     merged_blob.cache_control = "no-cache"
     merged_blob.patch()
@@ -237,12 +177,8 @@ def merge_json_files(gcs_client, temp_filename):
     final_filename = "final_output.json"
     final_output_blob = bucket.blob(f"{VIEW_FINAL_OUTPUT_PREFIX}{final_filename}")
 
-    # # final_output.json이 이미 존재하는지 확인
-    # if final_output_blob.exists():
-    #     print(f"{final_filename}이 이미 존재합니다. 삭제 후 새로 업로드합니다.")
-    #     final_output_blob.delete()
     
-    # # 새로운 final_output.json 업로드
+    # 새로운 final_output.json 업로드
     final_output_blob.upload_from_string(json.dumps(temp_data))
     final_output_blob.cache_control = "no-cache"
     final_output_blob.patch()
@@ -297,6 +233,7 @@ def process_new_videos(gcs_client):
         
         time.sleep(5)  # 5초마다 새 비디오 확인
 
+# JSON 병합 성공했을 때 server.js에 트리거 역할 함수
 def notify_merge_complete():
     try:
         response = requests.get('http://localhost:8080/merge-complete')
